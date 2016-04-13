@@ -24,11 +24,18 @@
 mkdir c:/s3local
 aws s3 cp s3://share-repo-ec2/windowsx64/ c:/s3local --recursive
 ```
-- Install and Setup
-  - Apache 2.4
-  - JDK 8.0
-  - Apache Tomcat 8.0
-  - MySQL 5.7
+- Install and Setup: Apache 2.4
+  - Install VC0215Runtime
+    - Execute "C:\s3local\vc2015_redistributable\vc_redist.x64.exe"
+  - Unzip and move directory to C:\Apache24
+  - Configure SRCROOT to "C:\Apache24"
+  - Open Powershell console with Administrator
+    - Run Command ```cd C:\Apache24\bin && .\httpd.exe```
+    - Access http://localhost/
+    - Stop httpd.exe to press Ctrl-C
+- TODO: JDK 8.0
+- TODO: Apache Tomcat 8.0
+- TODO: MySQL 5.7
 
 ## AWS Settings
 ###IAM
@@ -66,13 +73,14 @@ aws s3 cp s3://share-repo-ec2/windowsx64/ c:/s3local --recursive
 ## Installer
 
 ```bash
-$ aws s3 ls s3://share-repo-ec2 --recursive
+$ aws s3 ls s3://share-repo-ec2/windowsx64/ --recursive
 2016-04-13 00:03:00          0 windowsx64/
 2016-04-13 23:14:03    8028160 windowsx64/AWSCLI64.msi
 2016-04-13 00:23:06    9596162 windowsx64/apache-tomcat-8.0.33.exe
 2016-04-13 00:03:20    9912816 windowsx64/httpd-2.4.20-x64-vc14.zip
 2016-04-13 00:15:35  360966750 windowsx64/mysql-5.7.12-winx64.zip
 2016-04-13 00:21:00   28426240 windowsx64/mysql-workbench-community-6.3.6-winx64.msi
+2016-04-14 00:32:01   14572000 windowsx64/vc2015_redistributable/vc_redist.x64.exe
 ```
 
 ### AWSCLI x64
@@ -80,6 +88,20 @@ $ aws s3 ls s3://share-repo-ec2 --recursive
   - [Download the AWS CLI MSI installer for Windows (64-bit)](https://s3.amazonaws.com/aws-cli/AWSCLI64.msi)
 
 ### Apache HTTP Server
+- Require VC++2015Runtime
+  - [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145)
+  - If not install this, show following error message
+```
+---------------------------
+httpd.exe - System Error
+---------------------------
+The program can't start because VCRUNTIME140.dll is missing from your computer.
+Try reinstalling the program to fix this problem.
+---------------------------
+OK
+---------------------------
+```
+
 - [Apache 2.4 Server Binaries](http://www.apachehaus.com/cgi-bin/download.plx)
   - [Apache 2.4.20 x64](http://www.apachehaus.com/cgi-bin/download.plx?dli=NZ0Y5R1QNJjT6Z1KZRFb0AlVOpkVFVFdTdEaCV2Z)
 - [Windows に Apache HTTP Server 2.2 をインストールする手順](http://weblabo.oscasierra.net/installing-apache22-windows-1/)
