@@ -13,7 +13,22 @@
   - Installer
     - s3://share-repo-ec2
 
-## How to Setup
+## How to Setup Local Machine
+- Install Eclipse for J2EE
+- Install Tomcat Plugin for Eclipse
+  - [Sysdeo Eclipse Tomcat Launcher plugin](http://www.eclipsetotale.com/tomcatPlugin.html)
+- Install and Setup Tomcat 8.0
+  - Download installer from [apache-tomcat-8.0.33.tar.gz](http://ftp.kddilabs.jp/infosystems/apache/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33.tar.gz)
+- Eclipse Setting
+  - Create Project "Dynamic Web Project"
+    - See [MacでEclipseを使ったJava EE開発環境の構築](http://www.torachi.com/2015/01/how-to-set-up-Eclipse-for-Java-EE-on-Mac-OS-X.html)
+- Install Mysql
+  - brew install mysql
+  - Start / Stop MySQL Server, ```mysql.server start``` / ```mysql.server stop```
+  - Configure security
+    - ```mysql_secure_installation```
+
+## How to Setup Server
 - Create EC2 Instance (t2.micro)
 - Install
   - AWS CLI
@@ -33,9 +48,81 @@ aws s3 cp s3://share-repo-ec2/windowsx64/ c:/s3local --recursive
     - Run Command ```cd C:\Apache24\bin && .\httpd.exe```
     - Access http://localhost/
     - Stop httpd.exe to press Ctrl-C
-- TODO: JDK 8.0
-- TODO: Apache Tomcat 8.0
-- TODO: MySQL 5.7
+  - Install Apache2.4 as a Windows Service
+    - Open Powershell console with Administrator
+      - Run Command ```cd C:\Apache24\bin && .\httpd.exe -k install```
+- Install JDK 8.0
+  - Run GUI Installer and click next and next ...
+- Install Apache Tomcat 8.0
+  - Run GUI Installer
+  - Configuration
+    - Server Shutdown Port : 8005
+    - HTTP/1.1 Connector Port : 8008
+    - AJP/1.3 Connector Port : 8009
+    - Window Service Name : Tomcat8
+    - Tomcat Administrator Login
+      - User Name / Password : betahikaru / 
+      - Rols : manager-gui
+  - Click next and next ....
+  - If Tomcat stared, Open http://localhost:8080/
+- Install MySQL 5.7
+  - Run GUI Installer
+    - Refer [MySQL Server 5.6 を Windows にインストールする手順](http://weblabo.oscasierra.net/installing-mysql56-windows-1/)
+  - Agree License
+  - Select Edition : Server Only
+  - Type And Networking
+    - Config Type : Server Machine
+    - Port Number : 3306
+  - Accounts and Roles
+    - Root Password : 
+    - User : betahikaru (Host : All Host, Role : DB Admin)
+  - Run Command
+```
+cd 'C:\Program Files\MySQL\MySQL Server 5.7\bin'
+.\mysql.exe --version
+.\mysql.exe -u root -p
+```
+  - And Run
+```
+mysql> show variables like "chara%";
++--------------------------+---------------------------------------------------------+
+| Variable_name            | Value                                                   |
++--------------------------+---------------------------------------------------------+
+| character_set_client     | cp850                                                   |
+| character_set_connection | cp850                                                   |
+| character_set_database   | utf8                                                    |
+| character_set_filesystem | binary                                                  |
+| character_set_results    | cp850                                                   |
+| character_set_server     | utf8                                                    |
+| character_set_system     | utf8                                                    |
+| character_sets_dir       | C:\Program Files\MySQL\MySQL Server 5.7\share\charsets\ |
++--------------------------+---------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+mysql> quit
+Bye
+```
+  - Copy ```my-default.ini``` to ```my.ini```, on Administrator Console
+```
+cd "C:\Program Files\MySQL\MySQL Server 5.7"
+copy .\my-default.ini .\my.ini
+```
+  - Edit ```my.ini```
+    - Refer [mysqlで文字コードをutf8にセットする](http://qiita.com/YusukeHigaki/items/2cab311d2a559a543e3a)
+```
+[mysqld]
+...
+character-set-server=utf8 #mysqldセクションの末尾に追加
+default_password_lifetime=0 #パスワードの期限を無効化
+
+[client]
+default-character-set=utf8 #clientセクションを追加
+```
+  - Restart MySQL to apply configuration
+```
+net stop MySQL57
+net start MySQL57
+```
 
 ## AWS Settings
 ###IAM
@@ -116,5 +203,7 @@ OK
 
 ### MySQL
 - [MySQL on Windows (Installer & Tools) ](http://dev.mysql.com/downloads/windows/)
-  - [Windows (x86, 64-bit), ZIP Archive(mysql-5.7.12-winx64.zip)](http://dev.mysql.com/downloads/file/?id=462039)
+  - [Windows (x86, 32-bit), MSI Installer](https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-5.7.12.0.msi)
+    - * Note: MySQL Installer is 32 bit, but will install both 32 bit and 64 bit binaries.
+- MySQL Workbencg
   - [Windows (x86, 64-bit), MSI Installer(mysql-workbench-community-6.3.6-winx64.msi)](http://dev.mysql.com/get/Downloads/MySQLGUITools/mysql-workbench-community-6.3.6-winx64.msi)
