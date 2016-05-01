@@ -1,4 +1,5 @@
 #!/bin/sh
+# refer http://muramasa64.fprog.org/diary/?date=20141111
 instance_id=i-35fd55aa
 
 aws ec2 start-instances --instance-ids ${instance_id}
